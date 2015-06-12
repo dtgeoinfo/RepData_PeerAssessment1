@@ -10,6 +10,7 @@ output:
 ```{r preproc, echo=TRUE, message=F}
 library(dplyr)
 library(ggplot2)
+unzip(zipfile = "activity.zip")
 act <- read.csv("activity.csv")
 act$date <- as.Date(act$date)
 
@@ -50,7 +51,7 @@ filter(stepsByInt, steps==max(steps))
 
 There are `r nrow(act)-nrow(naAct)` rows with NA values.
 
-```{r missingValues1, echo=TRUE}m
+```{r missingValues1, echo=TRUE}
 act$dayInterval <- 1:(24*60/5)
 actCo <- act
 actCo <- merge(actCo,stepsByInt,by="dayInterval")
