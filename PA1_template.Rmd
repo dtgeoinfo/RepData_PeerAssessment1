@@ -23,7 +23,7 @@ stepsByDay <- summarise(group_by(naAct,date), steps=sum(steps))
 ```
 Another ways to calculate the same:  
 * tapply(naAct\$steps, naAct$date, sum)  
-* aggregate(steps ~ date, naAct, sum)  
+* kk <-aggregate(steps ~ date, naAct, sum)  
 
 ```{r}
 hist(stepsByDay$steps, breaks=15)
@@ -51,15 +51,22 @@ filter(stepsByInt, steps==max(steps))
 
 There are `r nrow(act)-nrow(naAct)` rows with NA values.
 
+To fill these missing values, we are going to use the mean interval . We assume that the number of
+steps in one interval is similar to the number of steps of the same interval in other days. 
+
 ```{r missingValues1, echo=TRUE}
 act$dayInterval <- 1:(24*60/5)
 actCo <- act
 actCo <- merge(actCo,stepsByInt,by="dayInterval")
 
-actCo[actCo$is.na(steps.x),] <- actCo  %>%
-  filter(is.na(steps.x)) %>%
-  mutate(steps.x=steps.y)
+pos_na <- which(is.na(actCo$steps.x))
+actCo[pos_na,"steps.x"] <-  actCo[pos_na,"steps.y"]
 
+stepsByDay_Co <- summarise(group_by(actCo,date), steps=sum(steps.x))
+hist(stepsByDay_Co$step, breaks=15)
+```
+   
+The steps by day mean is `r as.character(round(mean(stepsByDay_Co$steps),0))` and its median   `r median(stepsByDay_Co$steps)`
 ```
 
 
