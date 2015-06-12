@@ -1,19 +1,65 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
+```{r preproc, echo=TRUE, message=F}
+library(dplyr)
+library(ggplot2)
+act <- read.csv("activity.csv")
+act$date <- as.Date(act$date)
 
-
+```
 
 ## What is mean total number of steps taken per day?
+```{r }
+naAct <- act[complete.cases(act),] 
+stepsByDay <- summarise(group_by(naAct,date), steps=sum(steps))
+```
+Another ways to calculate the same:  
+* tapply(naAct\$steps, naAct$date, sum)  
+* aggregate(steps ~ date, naAct, sum)  
 
+```{r}
+hist(stepsByDay$steps, breaks=15)
+```
+   
+The steps by day mean is `r as.character(round(mean(stepsByDay$steps),0))` and its median   `r median(stepsByDay$steps)`
 
 
 ## What is the average daily activity pattern?
+```{r echo=T }
+naAct$dayInterval <- 1:(24*60/5)
+stepsByInt <- summarise(group_by(naAct,dayInterval), steps=mean(steps))
 
+p1 <- ggplot(stepsByInt, aes(x = dayInterval, y = steps))
+p1 + geom_line()
 
+```
+    
+This is the 5-minute interval that, on average across all the days in the dataset, contains the maximum number of steps, and that number of steps:   
+```{r}
+filter(stepsByInt, steps==max(steps))
+```
 
 ## Imputing missing values
+
+There are `r nrow(act)-nrow(naAct)` rows with NA values.
+
+```{r missingValues1, echo=TRUE}m
+act$dayInterval <- 1:(24*60/5)
+actCo <- act
+actCo <- merge(actCo,stepsByInt,by="dayInterval")
+
+actCo[actCo$is.na(steps.x),] <- actCo  %>%
+  filter(is.na(steps.x)) %>%
+  mutate(steps.x=steps.y)
+
+```
 
 
 
