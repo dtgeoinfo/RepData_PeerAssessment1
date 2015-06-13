@@ -3,6 +3,7 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+    self_contained: false
 ---
 
 
@@ -10,6 +11,7 @@ output:
 ```{r preproc, echo=TRUE, message=F}
 library(dplyr)
 library(ggplot2)
+library(knitr)
 unzip(zipfile = "activity.zip")
 act <- read.csv("activity.csv")
 act$date <- as.Date(act$date)
@@ -26,7 +28,7 @@ Another ways to calculate the same:
 * aggregate(steps ~ date, naAct, sum)  
 
 ```{r}
-hist(stepsByDay$steps, breaks=15, main="Mean Steps by Day", 
+hist(stepsByDay$steps, breaks=15, main="Mean Steps by Day / missing values", 
      xlab="Steps")
 ```
    
@@ -64,7 +66,7 @@ pos_na <- which(is.na(actCo$steps.x))
 actCo[pos_na,"steps.x"] <-  actCo[pos_na,"steps.y"]
 
 stepsByDay_Co <- summarise(group_by(actCo,date), steps=sum(steps.x))
-hist(stepsByDay_Co$step, breaks=15, main="Mean Steps by Day", 
+hist(stepsByDay_Co$step, breaks=15, main="Mean Steps by Day / fill missing values", 
      xlab="Steps")
 ```
    
