@@ -90,11 +90,3 @@ stepsByInt_wd <- summarise(group_by(actCo,interval,weekday), steps=mean(steps.x)
 qplot(interval, steps, data=stepsByInt_wd, geom="line") + facet_grid(weekday ~ .)
 
 ```
-
-
-
-
-
-
-
-
